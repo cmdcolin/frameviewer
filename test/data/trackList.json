@@ -1,1 +1,27 @@
-{"formatVersion":1,"tracks":[{"urlTemplate":"seq/{refseq_dirpath}/{refseq}-","chunkSize":20000,"label":"DNA","seqType":"dna","type":"SequenceTrack","storeClass":"JBrowse/Store/Sequence/StaticChunked","key":"Reference sequence","category":"Reference sequence"}]}
+{
+   "formatVersion" : 1,
+   "tracks" : [
+      {
+         "storeClass" : "JBrowse/Store/Sequence/StaticChunked",
+         "type" : "SequenceTrack",
+         "chunkSize" : 20000,
+         "category" : "Reference sequence",
+         "key" : "Reference sequence",
+         "label" : "DNA",
+         "seqType" : "dna",
+         "urlTemplate" : "seq/{refseq_dirpath}/{refseq}-"
+      },
+      {
+         "type" : "CanvasFeatures",
+         "style" : {
+            "className" : "feature"
+         },
+         "storeClass" : "JBrowse/Store/SeqFeature/NCList",
+         "trackType" : "CanvasFeatures",
+         "label" : "YeastGenome",
+         "key" : "YeastGenome",
+         "urlTemplate" : "tracks/YeastGenome/{refseq}/trackData.json",
+         "compress" : 0
+      }
+   ]
+}
