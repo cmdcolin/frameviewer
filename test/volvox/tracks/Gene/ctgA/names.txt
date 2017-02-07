@@ -1,0 +1,1 @@
+[["EDEN","EDEN"],"Gene","EDEN","ctgA",1049,9000]

@@ -12,16 +12,15 @@
       },
       {
          "label" : "dictyBase",
-         "compress" : 0,
-         "key" : "dictyBase",
-         "trackType" : "CanvasFeatures",
-         "style" : {
-            "className" : "feature"
-         },
          "urlTemplate" : "tracks/dictyBase/{refseq}/trackData.json",
          "storeClass" : "JBrowse/Store/SeqFeature/NCList",
-         "type" : "CanvasFeatures",
-         "glyph": "FrameViewer/View/FeatureGlyph/FrameGlyph"
+         "type" : "FrameViewer/View/Track/Frames"
+      },
+      {
+         "label": "dictyBase tabix",
+         "storeClass": "JBrowse/Store/SeqFeature/GFF3Tabix",
+         "urlTemplate": "dicty_chr1.tidy.gff.gz",
+         "type": "CanvasFeatures"
       }
    ],
    "formatVersion" : 1,
