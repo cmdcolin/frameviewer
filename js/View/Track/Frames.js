@@ -13,7 +13,7 @@ function (
     Util
 ) {
     return declare(CanvasFeatures, {
-        _defaultConfig: function() {
+        _defaultConfig: function () {
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
                 glyph: 'FrameViewer/View/FeatureGlyph/Frames',
                 style: {
