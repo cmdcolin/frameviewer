@@ -21,14 +21,18 @@ function (
             this.renderFrames(context, fRect);
 
             var subparts = this._getSubparts(fRect.f);
+            var end = this.track.browser.refSeq.length;
 
             for (var i = 0; i < subparts.length; ++i) {
                 var s = subparts[i];
                 if (s.get('type') === 'CDS') {
-                    var frame = s.get('start') % 3 + 1;
+                    var frame = s.get('strand') == 1 ?
+                        (s.get('start') % 3) :
+                        (s.get('end') % 3);
+
                     var left  = viewInfo.block.bpToX(s.get('start'));
                     var width = viewInfo.block.bpToX(s.get('end')) - left;
-                    context.fillRect(left, fRect.t + fh * frame / 4 - fh / 12, Math.max(1, width), fh / 6);
+                    context.fillRect(left, fRect.t + fh * (frame+1) / 4 - fh / 12, Math.max(1, width), fh / 6);
                 }
             }
         },
