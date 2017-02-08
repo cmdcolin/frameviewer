@@ -8,7 +8,7 @@ A JBrowse plugin for viewing which reading frame a coding region is in
 Figure 1. Shows reading frame glyph for several genes
 
 ![](img/2.png)
-Figure 2. Shows a reverse strand gene matching a start codon in the middle reading frame on the frame track and the sequence track
+Figure 2. Shows arrows pointing to the start codon matching the reading frame that the frame glyph gives
 
 ## Configuration
 
