@@ -1,29 +1,31 @@
 {
+   "formatVersion" : 1,
+   "classicMenu" : true,
+   "plugins" : [
+      "FrameViewer"
+   ],
    "tracks" : [
       {
-         "chunkSize" : 20000,
-         "label" : "DNA",
-         "seqType" : "dna",
          "key" : "Reference sequence",
-         "urlTemplate" : "seq/{refseq_dirpath}/{refseq}-",
+         "label" : "DNA",
+         "storeClass" : "JBrowse/Store/Sequence/StaticChunked",
          "category" : "Reference sequence",
          "type" : "SequenceTrack",
-         "storeClass" : "JBrowse/Store/Sequence/StaticChunked"
+         "chunkSize" : 20000,
+         "seqType" : "dna",
+         "urlTemplate" : "seq/{refseq_dirpath}/{refseq}-"
       },
       {
-         "label" : "dictyBase frames",
-         "urlTemplate" : "tracks/dictyBase/{refseq}/trackData.json",
+         "urlTemplate" : "tracks/mod/{refseq}/trackData.json",
          "storeClass" : "JBrowse/Store/SeqFeature/NCList",
+         "label" : "dictyBase frames",
          "type" : "FrameViewer/View/Track/Frames"
       },
       {
-         "label" : "dictyBase",
-         "urlTemplate" : "tracks/dictyBase/{refseq}/trackData.json",
+         "urlTemplate" : "tracks/mod/{refseq}/trackData.json",
+         "label" : "mod",
          "storeClass" : "JBrowse/Store/SeqFeature/NCList",
          "type" : "CanvasFeatures"
       }
-   ],
-   "formatVersion" : 1,
-   "plugins": ["FrameViewer"],
-   "classicMenu": true
+   ]
 }
