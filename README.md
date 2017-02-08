@@ -5,7 +5,10 @@ A JBrowse plugin for viewing which reading frame a coding region is in
 ## Screenshot
 
 ![](img/1.png)
+Figure 1. Shows reading frame glyph for several genes
 
+![](img/2.png)
+Figure 2. Shows a reverse strand gene matching a start codon in the middle reading frame on the frame track and the sequence track
 
 ## Configuration
 
