@@ -13,37 +13,28 @@ function (
     ProcessedTranscript
 ) {
     return declare(ProcessedTranscript, {
-        _getFeatureRectangle: function(viewArgs, feature) {
-            var ret = this.inherited(arguments);
-            ret.h = this.config.frameHeight;
-            return ret;
-        },
         renderFeature: function (context, fRect) {
-            this.renderFrames(context,  fRect);
-            this.renderSegments(context, fRect);
-        },
-        renderSegments: function (context, fRect) {
-            var subparts = this._getSubparts(fRect.f);
-            if (!subparts.length) {
-                return;
-            }
+            var viewInfo = fRect.viewInfo;
+            var fh = this.config.style.frameHeight;
+            context.clearRect(Math.floor(fRect.l), fRect.t, Math.ceil(fRect.w), fRect.h);
 
-            var thisB = this;
-            var parentFeature = fRect.f;
-            function style(feature, stylename) {
-                if (stylename == 'height') {
-                    return thisB._getFeatureHeight(fRect.viewInfo, feature);
+            this.renderFrames(context, fRect);
+
+            var subparts = this._getSubparts(fRect.f)
+
+            for(var i=0; i<subparts.length; ++i) {
+                var s = subparts[i];
+                if(s.get('type') == 'CDS') {
+                    var frame = s.get('start') % 3 + 1;
+                    var left  = viewInfo.block.bpToX( s.get('start') );
+                    var width = viewInfo.block.bpToX( s.get('end') ) - left;
+                    var h = fh/5;
+                    context.fillRect(left, fRect.t + fh*frame/4 - fh/10, Math.max(1, width), fh/5);
                 }
-                return thisB.getStyle(feature, stylename) || thisB.getStyle(parentFeature, stylename);
-            }
-
-            for (var i = 0; i < subparts.length; ++i) {
-                var start = subparts[i].get('start');
-                var frame = start % 3;
-                console.log(this.config.style.frameHeight)
-                this.renderBox(context, fRect.viewInfo, subparts[i], fRect.t + frame*this.config.style.frameHeight/3, this.config.style.frameHeight/3, fRect.f, style);
             }
         },
+        
+        
 
         renderFrames: function( context, fRect ) {
             // connector
@@ -53,23 +44,26 @@ function (
                 var connectorThickness = this.getStyle( fRect.f, 'connectorThickness' );
                 context.fillRect(
                     fRect.rect.l, // left
-                    Math.round(fRect.rect.t), // top
+                    Math.round(fRect.rect.t+this.config.style.frameHeight/4), // top
                     fRect.rect.w, // width
                     connectorThickness
                 );
                 context.fillRect(
                     fRect.rect.l, // left
-                    Math.round(fRect.rect.t+this.config.style.frameHeight/3), // top
+                    Math.round(fRect.rect.t+this.config.style.frameHeight/2), // top
                     fRect.rect.w, // width
                     connectorThickness
                 );
                 context.fillRect(
                     fRect.rect.l, // left
-                    Math.round(fRect.rect.t+this.config.style.frameHeight*2/3), // top
+                    Math.round(fRect.rect.t+this.config.style.frameHeight*3/4), // top
                     fRect.rect.w, // width
                     connectorThickness
                 );
             }
+        },
+        _getFeatureHeight: function(viewInfo, feature) {
+            return this.config.style.frameHeight;
         }
     });
 });
