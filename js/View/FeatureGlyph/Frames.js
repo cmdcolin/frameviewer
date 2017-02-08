@@ -13,12 +13,12 @@ function (
     ProcessedTranscript
 ) {
     return declare(ProcessedTranscript, {
+        _getFeatureRectangle: function(viewArgs, feature) {
+            var ret = this.inherited(arguments);
+            ret.h = this.config.frameHeight;
+            return ret;
+        },
         renderFeature: function (context, fRect) {
-            if (this.track.displayMode != 'collapsed') {
-                context.clearRect(Math.floor(fRect.l), fRect.t, Math.ceil(fRect.w), fRect.h);
-            }
-            
-
             this.renderFrames(context,  fRect);
             this.renderSegments(context, fRect);
         },
