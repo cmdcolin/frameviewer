@@ -28,8 +28,7 @@ function (
                     var frame = s.get('start') % 3 + 1;
                     var left  = viewInfo.block.bpToX( s.get('start') );
                     var width = viewInfo.block.bpToX( s.get('end') ) - left;
-                    var h = fh/5;
-                    context.fillRect(left, fRect.t + fh*frame/4 - fh/10, Math.max(1, width), fh/5);
+                    context.fillRect(left, fRect.t + fh*frame/4 - fh/12, Math.max(1, width), fh/6);
                 }
             }
         },

@@ -24,5 +24,6 @@
       }
    ],
    "formatVersion" : 1,
-   "plugins": ["FrameViewer"]
+   "plugins": ["FrameViewer"],
+   "classicMenu": true
 }

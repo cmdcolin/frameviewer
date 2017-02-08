@@ -17,7 +17,7 @@ function (
             return Util.deepUpdate(lang.clone(this.inherited(arguments)), {
                 glyph: 'FrameViewer/View/FeatureGlyph/Frames',
                 style: {
-                    frameHeight: 40
+                    frameHeight: 50
                 }
             });
         }
