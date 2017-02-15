@@ -1,56 +1,56 @@
 {
-   "formatVersion" : 1,
-   "classicMenu" : true,
    "plugins" : [
       "FrameViewer",
       "FeatureSequence"
    ],
+   "formatVersion" : 1,
    "tracks" : [
       {
          "key" : "Reference sequence",
-         "label" : "DNA",
-         "storeClass" : "JBrowse/Store/Sequence/StaticChunked",
-         "category" : "Reference sequence",
          "type" : "SequenceTrack",
-         "chunkSize" : 20000,
+         "storeClass" : "JBrowse/Store/Sequence/StaticChunked",
          "seqType" : "dna",
-         "urlTemplate" : "seq/{refseq_dirpath}/{refseq}-"
+         "chunkSize" : 20000,
+         "urlTemplate" : "seq/{refseq_dirpath}/{refseq}-",
+         "label" : "DNA",
+         "category" : "Reference sequence"
       },
       {
-         "urlTemplate" : "tracks/mod/{refseq}/trackData.json",
-         "storeClass" : "JBrowse/Store/SeqFeature/NCList",
          "label" : "dictyBase frames",
+         "urlTemplate" : "tracks/dictyphase/{refseq}/trackData.json",
+         "storeClass" : "JBrowse/Store/SeqFeature/NCList",
          "type" : "FrameViewer/View/Track/Frames"
       },
       {
-         "urlTemplate" : "tracks/mod/{refseq}/trackData.json",
-         "label" : "mod",
-         "storeClass" : "JBrowse/Store/SeqFeature/NCList",
          "type" : "CanvasFeatures",
-         "menuTemplate": [
-           {},
-           {},
-           {
-             "content" : "function(track,feature){return track.browser.plugins.FeatureSequence.callFxn(track, feature); }",
-             "label" : "View Feature Sequence",
-             "action" : "contentDialog",
-             "iconClass" : "dijitIconBookmark"
-           }
-         ]
+         "menuTemplate" : [
+            {},
+            {},
+            {
+               "action" : "contentDialog",
+               "iconClass" : "dijitIconBookmark",
+               "content" : "function(track,feature){return track.browser.plugins.FeatureSequence.callFxn(track, feature); }",
+               "label" : "View Feature Sequence"
+            }
+         ],
+         "storeClass" : "JBrowse/Store/SeqFeature/NCList",
+         "label" : "dictyphase",
+         "urlTemplate" : "tracks/dictyphase/{refseq}/trackData.json"
       },
       {
-         "urlTemplate" : "tracks/mod/{refseq}/trackData.json",
+         "showDNA" : true,
+         "type" : "FrameViewer/View/Track/Frames",
          "storeClass" : "JBrowse/Store/SeqFeature/NCList",
          "label" : "dictyBase frames (w/dna)",
-         "type" : "FrameViewer/View/Track/Frames",
-         "showDNA": true
+         "urlTemplate" : "tracks/dictyphase/{refseq}/trackData.json"
       },
       {
-         "urlTemplate" : "tracks/mod/{refseq}/trackData.json",
          "storeClass" : "JBrowse/Store/SeqFeature/NCList",
+         "showProtein" : true,
+         "urlTemplate" : "tracks/dictyphase/{refseq}/trackData.json",
          "label" : "dictyBase frames (w/protein)",
-         "type" : "FrameViewer/View/Track/Frames",
-         "showProtein": true
+         "type" : "FrameViewer/View/Track/Frames"
       }
-   ]
+   ],
+   "classicMenu" : true
 }

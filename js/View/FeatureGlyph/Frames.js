@@ -39,8 +39,9 @@ function (
                 };
             }
 
-            var drawProtein = function (left, top, del) {
+            var drawProtein = function (left, top, del, feat) {
                 return function (seq) {
+                    console.log(feat);
                     for (var j = 0; j < seq.length; j+=3) {
                         context.fillStyle = 'white';
                         context.fillText(r[seq.substring(j,j+3)], left + j * del, top);
@@ -70,7 +71,7 @@ function (
                     if (this.config.showProtein && viewInfo.block.scale > 5) {
                         this.track.browser.getStore('refseqs', function (store) {
                             context.fillStyle = 'white';
-                            store.getReferenceSequence({ ref: s.get('seq_id'), start: s.get('start'), end: s.get('end') }, drawProtein(left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta));
+                            store.getReferenceSequence({ ref: s.get('seq_id'), start: s.get('start'), end: s.get('end') }, drawProtein(left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta, s));
                         });
                     }
                 }
