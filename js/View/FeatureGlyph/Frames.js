@@ -57,8 +57,9 @@ function (
                     if (feat.get('strand') == -1) {
                         newseq = Util.revcom(seq);
                         if (thisB.prev) {
+                            //out of phase amino
                             context.fillStyle = 'black';
-                            context.fillText(codons[Util.revcom(newseq.substring(0, phase)) + thisB.prev], left - (3 - phase) * del, top);
+                            context.fillText(codons[thisB.prev+newseq.substring(0, phase)], left+(newseq.length + 3 - phase) * del, top);
                             thisB.prev = '';
                         }
                         for (var j = phase; j < n; j += 3) {
@@ -67,10 +68,11 @@ function (
                             context.fillText(codons[ret], left + (newseq.length - j - 1) * del, top);
                         }
                         if (remainder) {
-                            thisB.prev = Util.revcom(newseq.substring(newseq.length - remainder, newseq.length));
+                            thisB.prev = newseq.substring(newseq.length - remainder, newseq.length);
                         }
                     } else {
                         if (thisB.prev && phase) {
+                            //out of phase amino
                             context.fillStyle = 'black';
                             context.fillText(codons[thisB.prev + newseq.substring(0, phase)], left - (3 - phase) * del, top);
                             thisB.prev = '';
