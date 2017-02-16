@@ -19,7 +19,7 @@ function (
     return declare(ProcessedTranscript, {
         renderFeature: function (context, fRect) {
             var c = new CodonTable();
-            var r = c.generateCodonTable(lang.mixin(c.defaultCodonTable, this.track.browser.config.codonTable));
+            var codons = c.generateCodonTable(lang.mixin(c.defaultCodonTable, this.track.browser.config.codonTable));
 
             var viewInfo = fRect.viewInfo;
             var fh = this.config.style.frameHeight;
@@ -28,7 +28,6 @@ function (
             this.renderFrames(context, fRect);
 
             var subparts = this._getSubparts(fRect.f);
-            var thisB = this;
 
             var drawDNA = function (left, top, del) {
                 return function (seq) {
@@ -37,17 +36,30 @@ function (
                         context.fillText(seq[j], left + j * del, top);
                     }
                 };
-            }
+            };
 
             var drawProtein = function (left, top, del, feat) {
+                this.prev = '';
+                var thisB = this;
                 return function (seq) {
-                    console.log(feat);
-                    for (var j = 0; j < seq.length; j+=3) {
+                    var n = Math.floor(seq.length / 3) * 3;
+                    var remainder = seq.length % 3;
+                    var phase = feat.get('phase');
+
+                    if (this.prev) {
+                        context.fillStyle = 'black';
+                        context.fillText(codons[thisB.prev + seq.substring(0, phase)], left - (3 - phase) * del, top);
+                        s = 3;
+                    }
+                    for (var j = phase; j < n; j += 3) {
                         context.fillStyle = 'white';
-                        context.fillText(r[seq.substring(j,j+3)], left + j * del, top);
+                        context.fillText(codons[seq.substring(j, j + 3)], left + j * del, top);
+                    }
+                    if (remainder) {
+                        thisB.prev = seq.substring(seq.length - remainder, seq.length);
                     }
                 };
-            }
+            };
 
             for (var i = 0; i < subparts.length; ++i) {
                 var s = subparts[i];
@@ -68,7 +80,7 @@ function (
                             store.getReferenceSequence({ ref: s.get('seq_id'), start: s.get('start'), end: s.get('end') }, drawDNA(left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta));
                         });
                     }
-                    if (this.config.showProtein && viewInfo.block.scale > 5) {
+                    if (this.config.showProtein && viewInfo.block.scale > 3) {
                         this.track.browser.getStore('refseqs', function (store) {
                             context.fillStyle = 'white';
                             store.getReferenceSequence({ ref: s.get('seq_id'), start: s.get('start'), end: s.get('end') }, drawProtein(left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta, s));
@@ -108,7 +120,7 @@ function (
         _getFeatureHeight: function () {
             return this.config.style.frameHeight;
         }
-        
-        
+
+
     });
 });
