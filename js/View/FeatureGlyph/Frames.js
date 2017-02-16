@@ -5,7 +5,8 @@ define([
     'dojox/color/Palette',
     'JBrowse/Model/SimpleFeature',
     'JBrowse/View/FeatureGlyph/ProcessedTranscript',
-    'JBrowse/CodonTable'
+    'JBrowse/CodonTable',
+    'JBrowse/Util'
 ],
 function (
     declare,
@@ -14,7 +15,8 @@ function (
     Palette,
     SimpleFeature,
     ProcessedTranscript,
-    CodonTable
+    CodonTable,
+    Util
 ) {
     return declare(ProcessedTranscript, {
         renderFeature: function (context, fRect) {
@@ -23,20 +25,59 @@ function (
 
             var viewInfo = fRect.viewInfo;
             var fh = this.config.style.frameHeight;
+            var feature = fRect.f;
             context.clearRect(Math.floor(fRect.l), fRect.t, Math.ceil(fRect.w), fRect.h);
 
             this.renderFrames(context, fRect);
 
-            var subparts = this._getSubparts(fRect.f);
+            var subparts = this._getSubparts(feature);
 
-            var drawDNA = function (left, top, del) {
+            var drawDNA = function (left, top, del, feat) {
                 return function (seq) {
+                    if(feat.get('strand') == -1) {
+                        seq = Util.complement(seq);
+                    }
                     for (var j = 0; j < seq.length; j++) {
                         context.fillStyle = 'white';
                         context.fillText(seq[j], left + j * del, top);
                     }
                 };
             };
+
+            if(this.config.showProtein) {
+                this.track.browser.getStore('refseqs', function (store) {
+                    context.fillStyle = 'white';
+                    var fstart = feature.get('start');
+                    var fend = feature.get('end');
+                    store.getReferenceSequence({ ref: feature.get('seq_id'), start: fstart, end: fend }, function(seq) {
+                        var s = '';
+                        var ret = {};
+                        if(feature.get('strand') == -1) {
+                            subparts.forEach(function(s) {
+                                ret[s.get('start')] = Util.revcom(seq.substring(s.get('start') - fstart, s.get('end') - fstart));
+
+                            });
+                            Object.keys(ret).sort(function(a, b) { return a < b; }).forEach(function(elt) {
+                                s += ret[elt];
+                            });
+                        }
+                        else {
+                            subparts.forEach(function(s) {
+                                ret[s.get('start')] = seq.substring(s.get('start') - fstart, s.get('end') - fstart);
+
+                            });
+                            Object.keys(ret).sort(function(a, b) { return a < b; }).forEach(function(elt) {
+                                s += ret[elt];
+                            });
+                        }
+                        if(thisB.config.showProtein) {
+
+                        }
+                    });
+                    //drawProtein(left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta, s));
+                });
+
+            }
 
             var drawProtein = function (left, top, del, feat) {
                 this.prev = '';
@@ -45,18 +86,31 @@ function (
                     var n = Math.floor(seq.length / 3) * 3;
                     var remainder = seq.length % 3;
                     var phase = feat.get('phase');
-
-                    if (this.prev) {
-                        context.fillStyle = 'black';
-                        context.fillText(codons[thisB.prev + seq.substring(0, phase)], left - (3 - phase) * del, top);
-                        s = 3;
-                    }
-                    for (var j = phase; j < n; j += 3) {
-                        context.fillStyle = 'white';
-                        context.fillText(codons[seq.substring(j, j + 3)], left + j * del, top);
-                    }
-                    if (remainder) {
-                        thisB.prev = seq.substring(seq.length - remainder, seq.length);
+                    if(feat.get('strand') == -1) {
+                        if (this.prev) {
+                            context.fillStyle = 'black';
+                            context.fillText(codons[Util.revcom(seq.substring(0, phase)) + thisB.prev], left - (3 - phase) * del, top);
+                        }
+                        for (var j = seq.length; j > 0; j -= 3) {
+                            context.fillStyle = 'white';
+                            var ret = Util.revcom(seq.substring(j - 3, j));
+                            context.fillText(codons[ret], left + (j-1) * del, top);
+                        }
+                        if (remainder) {
+                            thisB.prev = Util.revcom(seq.substring(seq.length - remainder, seq.length));
+                        }
+                    } else {
+                        if (this.prev) {
+                            context.fillStyle = 'black';
+                            context.fillText(codons[thisB.prev + seq.substring(0, phase)], left - (3 - phase) * del, top);
+                        }
+                        for (var j = phase; j < n; j += 3) {
+                            context.fillStyle = 'white';
+                            context.fillText(codons[seq.substring(j, j + 3)], left + j * del, top);
+                        }
+                        if (remainder) {
+                            thisB.prev = seq.substring(seq.length - remainder, seq.length);
+                        }
                     }
                 };
             };
@@ -75,17 +129,17 @@ function (
                     var width = viewInfo.block.bpToX(s.get('end')) - left;
                     context.fillRect(left, fRect.t + fh * (frame + 1) / 4 - fh / 12, Math.max(1, width), fh / 6);
                     context.font = '8px';
-                    if (this.config.showDNA && viewInfo.block.scale > 5) {
-                        this.track.browser.getStore('refseqs', function (store) {
-                            store.getReferenceSequence({ ref: s.get('seq_id'), start: s.get('start'), end: s.get('end') }, drawDNA(left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta));
-                        });
-                    }
-                    if (this.config.showProtein && viewInfo.block.scale > 3) {
-                        this.track.browser.getStore('refseqs', function (store) {
-                            context.fillStyle = 'white';
-                            store.getReferenceSequence({ ref: s.get('seq_id'), start: s.get('start'), end: s.get('end') }, drawProtein(left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta, s));
-                        });
-                    }
+//                    if (this.config.showDNA && viewInfo.block.scale > 5) {
+//                        this.track.browser.getStore('refseqs', function (store) {
+//                            store.getReferenceSequence({ ref: s.get('seq_id'), start: s.get('start'), end: s.get('end') }, drawDNA(left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta, s));
+//                        });
+//                    }
+//                    if (this.config.showProtein && viewInfo.block.scale > 3) {
+//                        this.track.browser.getStore('refseqs', function (store) {
+//                            context.fillStyle = 'white';
+//                            store.getReferenceSequence({ ref: s.get('seq_id'), start: s.get('start'), end: s.get('end') }, drawProtein(left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta, s));
+//                        });
+//                    }
                 }
             }
         },
