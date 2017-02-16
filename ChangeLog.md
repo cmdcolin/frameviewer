@@ -1,7 +1,7 @@
 # 0.2.0 - February 15th, 2017
 
-- Add rendering of DNA and protein lettering inside the gene using config variables showDNA or showProtein enabled
-- Fix sample data to include phase parameter in GFF so that the proper protein can be calculated
+- Add rendering of DNA and protein inside the gene (enabled via config variables)
+- Use GFF phase parameter for proper protein sequence calculation
 
 # 0.1.0 - February 8th, 2017
 

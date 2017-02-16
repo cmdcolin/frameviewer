@@ -5,15 +5,13 @@ A JBrowse plugin for viewing which reading frame a coding region is in
 ## Screenshot
 
 ![](img/1.png)
-Figure 1. Shows reading frame glyph for several genes
-
-![](img/2.png)
-Figure 2. Shows arrows pointing to the start codon matching the reading frame that the frame glyph gives
+Figure 1. Shows protein translations and reading frames for a gene
 
 ## Configuration
 
-style.frameHeight - the height of the feature that contains the frames. Default 50px
-
+* style.frameHeight - the height of the feature that contains the frames. Default: 50px
+* showProtein - show the protein sequence of coding regions on the glyph. Default: false
+* showDNA - show the DNA of coding regions on the glyph. Default: false
 
 ## Example
 
@@ -21,7 +19,8 @@ style.frameHeight - the height of the feature that contains the frames. Default 
      "label" : "dictyBase frames",
      "urlTemplate" : "tracks/dictyBase/{refseq}/trackData.json",
      "storeClass" : "JBrowse/Store/SeqFeature/NCList",
-     "type" : "FrameViewer/View/Track/Frames"
+     "type" : "FrameViewer/View/Track/Frames",
+     "showProtein": true
     }
 
 The test/data/ directory contains a sample config also.
