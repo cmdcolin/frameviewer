@@ -35,7 +35,7 @@ function (
             var drawDNA = function (feat, left, top, del) {
                 return function (seq) {
                     var newseq = seq;
-                    if (feat.get('strand') == -1) {
+                    if (feat.get('strand') === -1) {
                         newseq = Util.complement(seq);
                     }
                     for (var j = 0; j < newseq.length; j++) {
@@ -50,16 +50,16 @@ function (
                 var thisB = this;
                 return function (seq) {
                     var n = Math.floor(seq.length / 3) * 3;
-                    var remainder = (seq.length+prev.length) % 3;
+                    var remainder = (seq.length + thisB.prev.length) % 3;
                     var phase = feat.get('phase');
                     var newseq = seq;
 
-                    if (feat.get('strand') == -1) {
+                    if (feat.get('strand') === -1) {
                         newseq = Util.revcom(seq);
                         if (thisB.prev) {
-                            //out of phase amino
+                            // out of phase amino
                             context.fillStyle = 'black';
-                            context.fillText(codons[thisB.prev+newseq.substring(0, phase)], left+(newseq.length + 3 - phase) * del, top);
+                            context.fillText(codons[thisB.prev + newseq.substring(0, phase)], left + (newseq.length + 3 - phase) * del, top);
                             thisB.prev = '';
                         }
                         for (var j = phase; j < n; j += 3) {
@@ -72,7 +72,7 @@ function (
                         }
                     } else {
                         if (thisB.prev && phase) {
-                            //out of phase amino
+                            // out of phase amino
                             context.fillStyle = 'black';
                             context.fillText(codons[thisB.prev + newseq.substring(0, phase)], left - (3 - phase) * del, top);
                             thisB.prev = '';
@@ -88,7 +88,7 @@ function (
                 };
             };
 
-            if (feature.get('strand') == -1) {
+            if (feature.get('strand') === -1) {
                 subparts = subparts.sort(function (a, b) { return b.get('start') > a.get('start'); });
             }
 
@@ -104,18 +104,18 @@ function (
                     context.fillRect(left, fRect.t + fh * (frame + 1) / 4 - fh / 12, Math.max(1, width), fh / 6);
                     context.font = '8px';
                     if (this.config.showDNA && viewInfo.block.scale > 5) {
-                        this.track.browser.getStore('refseqs', (function(f, l, t, d) {
+                        this.track.browser.getStore('refseqs', (function (f, l, t, d) {
                             return function (store) {
                                 store.getReferenceSequence({ ref: f.get('seq_id'), start: f.get('start'), end: f.get('end') }, drawDNA(f, l, t, d));
-                            }
+                            };
                         })(s, left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta));
                     }
                     if (this.config.showProtein && viewInfo.block.scale > 3) {
-                        this.track.browser.getStore('refseqs', (function(f, l, t, d) {
+                        this.track.browser.getStore('refseqs', (function (f, l, t, d) {
                             context.fillStyle = 'white';
                             return function (store) {
                                 store.getReferenceSequence({ ref: f.get('seq_id'), start: f.get('start'), end: f.get('end') }, drawProtein(f, l, t, d));
-                            }
+                            };
                         })(s, left, fRect.t + fh * (frame + 1) / 4 + fh / 16, delta));
                     }
                 }
