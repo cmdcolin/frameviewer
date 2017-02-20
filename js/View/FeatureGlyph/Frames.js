@@ -29,7 +29,7 @@ function (
             var feature = fRect.f;
             var subparts = this._getSubparts(feature);
             var thisB = this;
-            this.prev = '';
+            var prev = '';
 
             context.clearRect(Math.floor(fRect.l), fRect.t, Math.ceil(fRect.w), fRect.h);
 
@@ -61,7 +61,7 @@ function (
                 for (var iter = 0; iter < arr.length; iter++) {
                     var subfeat = arr[iter].feat;
                     var seq = arr[iter].seq;
-                    var frame = subfeat.get('strand') === 1 ? ((subfeat.get('start') - thisB.prev.length) % 3) : ((subfeat.get('end') + thisB.prev.length) % 3);
+                    var frame = subfeat.get('strand') === 1 ? ((subfeat.get('start') - prev.length) % 3) : ((subfeat.get('end') + prev.length) % 3);
                     var left  = viewInfo.block.bpToX(subfeat.get('start'));
                     var delta = viewInfo.block.bpToX(subfeat.get('start') + 1) - left;
                     var width = viewInfo.block.bpToX(subfeat.get('end')) - left;
@@ -80,15 +80,17 @@ function (
                         }
                     } else if (thisB.config.showProtein && viewInfo.block.scale > 3) {
                         var n = Math.floor(seq.length / 3) * 3;
-                        var remainder = (seq.length + thisB.prev.length) % 3;
+                        var remainder = (seq.length + prev.length) % 3;
                         var phase = subfeat.get('phase');
 
                         if (subfeat.get('strand') === -1) {
                             seq = Util.revcom(seq);
-                            if (thisB.prev) {
+                            if (prev) {
                                 context.fillStyle = 'black';
-                                context.fillText(codons[thisB.prev + seq.substring(0, phase)], left + (seq.length + 3 - phase) * delta - 3, top + 3);
-                                thisB.prev = '';
+                                if (prev.length + phase === 3) {
+                                    context.fillText(codons[prev + seq.substring(0, phase)], left + (seq.length + 3 - phase) * delta - 3, top + 3);
+                                }
+                                prev = '';
                             }
                             for (var j = phase; j < n; j += 3) {
                                 context.fillStyle = 'white';
@@ -97,13 +99,15 @@ function (
                                 }
                             }
                             if (remainder) {
-                                thisB.prev = seq.substring(seq.length - remainder, seq.length);
+                                prev = seq.substring(seq.length - remainder, seq.length);
                             }
                         } else {
-                            if (thisB.prev && phase) {
+                            if (prev && phase) {
                                 context.fillStyle = 'black';
-                                context.fillText(codons[thisB.prev + seq.substring(0, phase)], left - (3 - phase) * delta + 3, top + 3);
-                                thisB.prev = '';
+                                if (prev.length + phase === 3) {
+                                    context.fillText(codons[prev + seq.substring(0, phase)], left - (3 - phase) * delta + 3, top + 3);
+                                }
+                                prev = '';
                             }
                             for (var j = phase; j < n; j += 3) {
                                 context.fillStyle = 'white';
