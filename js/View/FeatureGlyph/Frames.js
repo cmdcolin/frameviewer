@@ -56,6 +56,7 @@ function (
                 }
             }
 
+            
             all(promises).then(function (arr) {
                 for (var iter = 0; iter < arr.length; iter++) {
                     var subfeat = arr[iter].feat;
