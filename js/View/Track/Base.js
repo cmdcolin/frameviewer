@@ -26,7 +26,7 @@ function (
 
             this._renderCoreDetails(track, f, featDiv, cc);
 
-            if (f.get('type') === 'mRNA') {
+            if (f.get('type') === 'mRNA'||f.get('type')=='transcript') {
                 this._renderProteinSequence(track, f, featDiv, cc);
             }
 
@@ -49,7 +49,7 @@ function (
             coreDetails.innerHTML += '<h2 class="sectiontitle">Protein sequence<h2>';
 
             this._getProteinSequence(f).then(function (seq) {
-                coreDetails.innerHTML += '<pre style="word-wrap: break-word;white-space: pre-wrap;">>' + f.get('name') + '\n' + seq + '</pre>';
+                coreDetails.innerHTML += '<pre style="word-wrap: break-word;white-space: pre-wrap;">>' + (f.get('name')||f.get('id')) + '\n' + seq + '</pre>';
             });
         },
         _getProteinSequence: function (feature) {
