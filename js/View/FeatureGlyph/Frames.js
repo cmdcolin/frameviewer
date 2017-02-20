@@ -56,12 +56,12 @@ function (
                 }
             }
 
-            
+
             all(promises).then(function (arr) {
                 for (var iter = 0; iter < arr.length; iter++) {
                     var subfeat = arr[iter].feat;
                     var seq = arr[iter].seq;
-                    var frame = subfeat.get('strand') === 1 ? (subfeat.get('start') % 3) : (subfeat.get('end') % 3);
+                    var frame = subfeat.get('strand') === 1 ? ((subfeat.get('start') - thisB.prev.length) % 3) : ((subfeat.get('end') + thisB.prev.length) % 3);
                     var left  = viewInfo.block.bpToX(subfeat.get('start'));
                     var delta = viewInfo.block.bpToX(subfeat.get('start') + 1) - left;
                     var width = viewInfo.block.bpToX(subfeat.get('end')) - left;
@@ -91,9 +91,10 @@ function (
                                 thisB.prev = '';
                             }
                             for (var j = phase; j < n; j += 3) {
-                                var ret = seq.substring(j, j + 3);
                                 context.fillStyle = 'white';
-                                context.fillText(codons[ret], left + (seq.length - j - 1) * delta - 3, top + 3);
+                                if (j + 3 <= seq.length) {
+                                    context.fillText(codons[seq.substring(j, j + 3)], left + (seq.length - j - 1) * delta - 3, top + 3);
+                                }
                             }
                             if (remainder) {
                                 thisB.prev = seq.substring(seq.length - remainder, seq.length);

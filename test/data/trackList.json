@@ -50,6 +50,12 @@
          "urlTemplate" : "tracks/dictyphase/{refseq}/trackData.json",
          "label" : "dictyBase frames (w/protein)",
          "type" : "FrameViewer/View/Track/Frames"
+      },
+      {
+         "storeClass" : "JBrowse/Store/SeqFeature/NCList",
+         "urlTemplate" : "tracks/dictyphase/{refseq}/trackData.json",
+         "label" : "dictyBase (w/protein popup)",
+         "type" : "FrameViewer/View/Track/Base"
       }
    ],
    "classicMenu" : true
