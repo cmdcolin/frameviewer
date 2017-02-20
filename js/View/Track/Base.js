@@ -79,19 +79,20 @@ function (
             }
             return all(promises).then(function (arr) {
                 var proteinSequence = '';
+                var prev = '';
 
                 for (var iter = 0; iter < arr.length; iter++) {
                     var subfeat = arr[iter].feat;
                     var seq = arr[iter].seq;
                     var n = Math.floor(seq.length / 3) * 3;
-                    var remainder = (seq.length + thisB.prev.length) % 3;
+                    var remainder = (seq.length + prev.length) % 3;
                     var phase = subfeat.get('phase');
 
                     if (subfeat.get('strand') === -1) {
                         seq = Util.revcom(seq);
-                        if (thisB.prev) {
-                            proteinSequence += codons[thisB.prev + seq.substring(0, phase)];
-                            thisB.prev = '';
+                        if (prev) {
+                            proteinSequence += codons[prev + seq.substring(0, phase)];
+                            prev = '';
                         }
                         for (var j = phase; j < n; j += 3) {
                             if (j + 3 <= seq.length) {
@@ -99,12 +100,12 @@ function (
                             }
                         }
                         if (remainder) {
-                            thisB.prev = seq.substring(seq.length - remainder, seq.length);
+                            prev = seq.substring(seq.length - remainder, seq.length);
                         }
                     } else {
-                        if (thisB.prev && phase) {
-                            proteinSequence += codons[thisB.prev + seq.substring(0, phase)];
-                            thisB.prev = '';
+                        if (prev && phase) {
+                            proteinSequence += codons[prev + seq.substring(0, phase)];
+                            prev = '';
                         }
                         for (var j = phase; j < n; j += 3) {
                             if (j + 3 <= seq.length) {
@@ -112,7 +113,7 @@ function (
                             }
                         }
                         if (remainder) {
-                            thisB.prev = seq.substring(seq.length - remainder, seq.length);
+                            prev = seq.substring(seq.length - remainder, seq.length);
                         }
                     }
                 }
