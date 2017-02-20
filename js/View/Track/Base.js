@@ -5,6 +5,7 @@ define([
     'dojo/Deferred',
     'dojo/promise/all',
     'JBrowse/View/Track/CanvasFeatures',
+    'JBrowse/Model/SimpleFeature',
     'JBrowse/CodonTable',
     'JBrowse/Util'
 ],
@@ -15,6 +16,7 @@ function (
     Deferred,
     all,
     CanvasFeatures,
+    SimpleFeature,
     CodonTable,
     Util
 ) {
@@ -53,11 +55,23 @@ function (
         _getProteinSequence: function (feature) {
             var c = new CodonTable();
             var codons = c.generateCodonTable(lang.mixin(c.defaultCodonTable, this.browser.config.codonTable));
-            var subparts = feature.children();
+            var sub = feature.children();
+            var subparts = array.map(sub, function (ret) {
+                return new SimpleFeature({
+                    data: {
+                        start: ret.get('start'),
+                        name: ret.get('name'),
+                        phase: ret.get('phase'),
+                        strand: ret.get('strand'),
+                        end: ret.get('end'),
+                        type: ret.get('type'),
+                        seq_id: ret.get('seq_id')
+                    }
+                });
+            });
             this.prev = '';
 
             var promises = [];
-            var thisB = this;
 
 
             if (feature.get('strand') === -1) {

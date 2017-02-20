@@ -30,7 +30,7 @@ function (
             var frameHeight = this.config.style.frameHeight;
             var feature = fRect.f;
             var sub = this._getSubparts(feature);
-            var subparts = array.map(sub, function(ret) {
+            var subparts = array.map(sub, function (ret) {
                 return new SimpleFeature({
                     data: {
                         start: ret.get('start'),
@@ -42,7 +42,7 @@ function (
                         seq_id: ret.get('seq_id')
                     }
                 });
-            })
+            });
             var thisB = this;
 
             var cache = this.chunkCache = this.chunkCache || new LRUCache({
