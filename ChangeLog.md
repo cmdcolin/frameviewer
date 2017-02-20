@@ -1,3 +1,8 @@
+# 0.3.0 - February 19th, 2017
+
+- Simplify protein rendering
+- Add protein rendering to View details popup box
+
 # 0.2.0 - February 15th, 2017
 
 - Add rendering of DNA and protein inside the gene (enabled via config variables)
