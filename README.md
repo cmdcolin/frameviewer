@@ -1,6 +1,6 @@
 # frameviewer
 
-A JBrowse plugin for viewing which reading frame a coding region is in
+A JBrowse plugin for viewing protein/DNA sequences of coding sequences of genes.
 
 ## Screenshot
 
