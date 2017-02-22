@@ -1,3 +1,7 @@
+# 0.4.0 - February 22nd, 2017
+
+- Correct protein and DNA rendering in both popup and glyph
+
 # 0.3.0 - February 19th, 2017
 
 - Simplify protein rendering

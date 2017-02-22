@@ -26,7 +26,7 @@ function (
 
             this._renderCoreDetails(track, f, featDiv, cc);
 
-            if (f.get('type') === 'mRNA'||f.get('type')=='transcript') {
+            if (f.get('type') === 'mRNA' || f.get('type') === 'transcript') {
                 this._renderProteinSequence(track, f, featDiv, cc);
             }
 
@@ -49,11 +49,12 @@ function (
             coreDetails.innerHTML += '<h2 class="sectiontitle">Protein sequence<h2>';
 
             this._getProteinSequence(f).then(function (seq) {
-                coreDetails.innerHTML += '<pre style="word-wrap: break-word;white-space: pre-wrap;">>' + (f.get('name')||f.get('id')) + '\n' + seq + '</pre>';
+                coreDetails.innerHTML += '<pre style="word-wrap: break-word;white-space: pre-wrap;">>' + (f.get('name') || f.get('id')) + '\n' + seq + '</pre>';
             });
         },
         _getProteinSequence: function (feature) {
             var c = new CodonTable();
+            var deferred = new Deferred();
             var codons = c.generateCodonTable(lang.mixin(c.defaultCodonTable, this.browser.config.codonTable));
             var sub = feature.children();
             var subparts = array.map(sub, function (ret) {
@@ -69,71 +70,79 @@ function (
                     }
                 });
             });
-            this.prev = '';
-
-            var promises = [];
+            var prev = '';
 
 
             if (feature.get('strand') === -1) {
-                subparts = subparts.sort(function (a, b) { return b.get('start') > a.get('start'); });
+                subparts.sort(function (a, b) { return b.get('start') > a.get('start'); });
             }
-            for (var i = 0; i < subparts.length; ++i) {
-                var s = subparts[i];
-                if (s.get('type') === 'CDS') {
-                    var d = new Deferred();
-                    promises.push(d);
-                    this.browser.getStore('refseqs', (function (feat, deferred) {
-                        return function (store) {
-                            store.getReferenceSequence({ ref: feat.get('seq_id'), start: feat.get('start'), end: feat.get('end') }, function (seq) {
-                                deferred.resolve({ seq: seq, feat: feat });
-                            });
-                        };
-                    })(s, d));
-                }
-            }
-            return all(promises).then(function (arr) {
+            this.browser.getStore('refseqs', function (store) {
                 var proteinSequence = '';
-                var prev = '';
+                var wait = 0;
+                for (var i = 0; i < subparts.length; ++i) {
+                    var subpart = subparts[i];
+                    if (subpart.get('type') === 'CDS') {
+                        wait++;
+                        store.getReferenceSequence({ ref: subpart.get('seq_id'), start: subpart.get('start'), end: subpart.get('end') }, (function (feat) {
+                            return function (seq) {
+                                var subfeat = feat;
+                                var mseq = seq;
+                                var phase = subfeat.get('phase');
+                                var n = Math.floor(mseq.length / 3) * 3;
+                                var remainder = (mseq.length + prev.length) % 3;
 
-                for (var iter = 0; iter < arr.length; iter++) {
-                    var subfeat = arr[iter].feat;
-                    var seq = arr[iter].seq;
-                    var n = Math.floor(seq.length / 3) * 3;
-                    var remainder = (seq.length + prev.length) % 3;
-                    var phase = subfeat.get('phase');
+                                if (subfeat.get('strand') === -1) {
+                                    mseq = Util.revcom(mseq);
+                                    if (prev) {
+                                        if (phase !== 3 - prev.length) {
+                                            console.log('warning: reading frame phase is off', prev, phase);
+                                        }
+                                        proteinSequence += codons[prev + mseq.substring(0, 3 - prev.length)];
+                                        prev = '';
+                                    }
+                                    for (var j = phase; j < n; j += 3) {
+                                        if (j + 3 <= mseq.length) {
+                                            proteinSequence += codons[mseq.substring(j, j + 3)];
+                                        }
+                                    }
+                                    if (remainder) {
+                                        prev = mseq.substring(mseq.length - remainder, mseq.length);
+                                    }
+                                } else {
+                                    if (prev) {
+                                        if (phase !== 3 - prev.length) {
+                                            console.log('warning: reading frame phase is off', prev, phase);
+                                        }
 
-                    if (subfeat.get('strand') === -1) {
-                        seq = Util.revcom(seq);
-                        if (prev) {
-                            proteinSequence += codons[prev + seq.substring(0, phase)];
-                            prev = '';
-                        }
-                        for (var j = phase; j < n; j += 3) {
-                            if (j + 3 <= seq.length) {
-                                proteinSequence += codons[seq.substring(j, j + 3)];
-                            }
-                        }
-                        if (remainder) {
-                            prev = seq.substring(seq.length - remainder, seq.length);
-                        }
-                    } else {
-                        if (prev && phase) {
-                            proteinSequence += codons[prev + seq.substring(0, phase)];
-                            prev = '';
-                        }
-                        for (var j = phase; j < n; j += 3) {
-                            if (j + 3 <= seq.length) {
-                                proteinSequence += codons[seq.substring(j, j + 3)];
-                            }
-                        }
-                        if (remainder) {
-                            prev = seq.substring(seq.length - remainder, seq.length);
-                        }
+                                        proteinSequence += codons[prev + mseq.substring(0, 3 - prev.length)];
+                                        prev = '';
+                                    }
+                                    for (var j = phase; j < n; j += 3) {
+                                        if (j + 3 <= mseq.length) {
+                                            proteinSequence += codons[mseq.substring(j, j + 3)];
+                                        }
+                                    }
+                                    if (remainder) {
+                                        prev = mseq.substring(mseq.length - remainder, mseq.length);
+                                    }
+                                }
+                                wait--;
+                            };
+                        })(subpart));
                     }
                 }
-                return proteinSequence[proteinSequence.length - 1] === '*' ?
-                    proteinSequence.slice(0, -1) :  proteinSequence + '\nWARNING: No stop codon';
+                var waiter = function () {
+                    if (wait === 0) {
+                        deferred.resolve(proteinSequence[proteinSequence.length - 1] === '*' ?
+                            proteinSequence.slice(0, -1) :  proteinSequence + '\nWARNING: No stop codon');
+                    } else {
+                        setTimeout(waiter, 100);
+                    }
+                };
+                waiter();
             });
+
+            return deferred;
         }
     });
 });
