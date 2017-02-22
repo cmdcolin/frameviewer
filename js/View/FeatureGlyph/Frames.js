@@ -62,7 +62,12 @@ function (
                                 var subfeat = feat;
                                 var mseq = seq;
                                 var phase = subfeat.get('phase');
-                                var frame = subfeat.get('strand') === 1 ? ((subfeat.get('start') - phase) % 3) : ((subfeat.get('end') + phase) % 3);
+                                var start = subfeat.get('start') + phase;
+                                var end = subfeat.get('end') - phase;
+
+                                var frame = subfeat.get('strand') === 1 ?
+                                    (2 - (((start) % 3 + 3) % 3)) : // top is the 2nd frame
+                                    ((end % 3 + 3) % 3); // bottom is 2nd frame;
                                 var left  = viewInfo.block.bpToX(subfeat.get('start'));
                                 var delta = viewInfo.block.bpToX(subfeat.get('start') + 1) - left;
                                 var width = viewInfo.block.bpToX(subfeat.get('end')) - left;
@@ -90,7 +95,7 @@ function (
                                             if (phase !== 3 - prev.length) {
                                                 console.log('warning: reading frame phase is off', prev, phase);
                                             }
-                                            context.fillText(codons[prev + mseq.substring(0, 3 - prev.length)], left + (mseq.length + 3 - prev.length) * delta - 3, top + 3);
+                                            context.fillText(codons[prev + mseq.substring(0, 3 - prev.length)], left + (mseq.length + 2 - prev.length) * delta - 3, top + 3);
                                             prev = '';
                                         }
                                         for (var j = phase; j < n; j += 3) {
@@ -109,7 +114,7 @@ function (
                                                 console.log('warning: reading frame phase is off', prev, phase);
                                             }
 
-                                            context.fillText(codons[prev + mseq.substring(0, 3 - prev.length)], left - (3 - prev.length) * delta + 3, top + 3);
+                                            context.fillText(codons[prev + mseq.substring(0, 3 - prev.length)], left - prev.length * delta + 3, top + 3);
                                             prev = '';
                                         }
                                         for (var j = phase; j < n; j += 3) {
