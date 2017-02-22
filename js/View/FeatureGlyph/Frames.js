@@ -95,13 +95,13 @@ function (
                                             if (phase !== 3 - prev.length) {
                                                 console.log('warning: reading frame phase is off', prev, phase);
                                             }
-                                            context.fillText(codons[prev + mseq.substring(0, 3 - prev.length)], left + (mseq.length + 2 - prev.length) * delta - 3, top + 3);
+                                            context.fillText(codons[prev + mseq.substring(0, 3 - prev.length)], left + (mseq.length + prev.length) * delta, top + 3);
                                             prev = '';
                                         }
                                         for (var j = phase; j < n; j += 3) {
                                             context.fillStyle = 'white';
                                             if (j + 3 <= mseq.length) {
-                                                context.fillText(codons[mseq.substring(j, j + 3)], left + (mseq.length - j - 1) * delta - 3, top + 3);
+                                                context.fillText(codons[mseq.substring(j, j + 3)], left + (mseq.length - j - 1) * delta, top + 3);
                                             }
                                         }
                                         if (remainder) {
