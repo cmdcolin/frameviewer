@@ -37,3 +37,6 @@ to jbrowse_conf.json or trackList.json. See JBrowse FAQ on installing plugins fo
 ## Feedback
 
 Please let me know if you have feedback or know of crazy biology corner cases that need covering!
+
+
+Note: code currently contains glitches that make this not production ready
