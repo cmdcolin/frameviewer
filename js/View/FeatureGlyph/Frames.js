@@ -65,9 +65,7 @@ function (
                                 var start = subfeat.get('start') + phase;
                                 var end = subfeat.get('end') - phase;
 
-                                var frame = subfeat.get('strand') === 1 ?
-                                    (2 - (((start) % 3 + 3) % 3)) : // top is the 2nd frame
-                                    ((end % 3 + 3) % 3); // bottom is 2nd frame;
+                                var frame = feat.get('strand') === 1 ? (start + phase) % 3 : (end - phase) % 3;
                                 var left  = viewInfo.block.bpToX(subfeat.get('start'));
                                 var delta = viewInfo.block.bpToX(subfeat.get('start') + 1) - left;
                                 var width = viewInfo.block.bpToX(subfeat.get('end')) - left;

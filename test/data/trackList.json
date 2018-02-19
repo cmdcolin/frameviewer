@@ -1,7 +1,6 @@
 {
    "plugins" : [
       "FrameViewer",
-      "FeatureSequence"
    ],
    "formatVersion" : 1,
    "tracks" : [
@@ -23,16 +22,6 @@
       },
       {
          "type" : "CanvasFeatures",
-         "menuTemplate" : [
-            {},
-            {},
-            {
-               "action" : "contentDialog",
-               "iconClass" : "dijitIconBookmark",
-               "content" : "function(track,feature){return track.browser.plugins.FeatureSequence.callFxn(track, feature); }",
-               "label" : "View Feature Sequence"
-            }
-         ],
          "storeClass" : "JBrowse/Store/SeqFeature/NCList",
          "label" : "dictyphase",
          "urlTemplate" : "tracks/dictyphase/{refseq}/trackData.json"
